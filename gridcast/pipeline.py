@@ -6,7 +6,7 @@ import pandas as pd
 
 from gridcast.data import load_data
 from gridcast.model import evaluate_zone, forecast_recursive
-from gridcast.stationarity import adf_report
+from gridcast.stationarity import acf_report, adf_report
 
 
 def run_pipeline(
@@ -45,6 +45,7 @@ def run_pipeline(
 
     per_zone: dict[str, dict[str, float]] = {}
     adf_dict: dict[str, dict] = {}
+    acf_dict: dict[str, dict] = {}
 
     for zone, series in sorted(evaluated_zones.items()):
         # Holdout evaluation
@@ -62,6 +63,13 @@ def run_pipeline(
             "statistic": round(adf_res["statistic"], 4),
             "p_value": round(adf_res["p_value"], 6),
             "stationary": adf_res["stationary"],
+        }
+
+        # Autocorrelation at lag 1 and the seasonal lag 12
+        acf_res = acf_report(series)
+        acf_dict[zone] = {
+            "lag_1": round(acf_res["lag_1"], 4),
+            "lag_12": round(acf_res["lag_12"], 4),
         }
 
     # Overall metrics across all evaluated zones
@@ -86,6 +94,7 @@ def run_pipeline(
         "overall": overall,
         "per_zone": per_zone,
         "adf": adf_dict,
+        "acf": acf_dict,
     }
 
     # Write metrics.json

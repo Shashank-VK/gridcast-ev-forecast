@@ -41,3 +41,10 @@
   - Columns: zone, month, predicted_ev_population.
 - `README.md` documents problem, method, dataset provenance link, and real measured results without hype words or em dashes.
 - Gate `.builder-os/init.sh` exits 0 with 10 passed tests.
+
+## Update 2026-11-20 (post-build, Flash-gate driven)
+- Added autocorrelation analysis: `acf_report` in gridcast/stationarity.py
+  (statsmodels acf, lag 1 and seasonal lag 12), wired into pipeline metrics
+  under `acf` per zone. New test test_acf_report_ar1_and_king.
+- Re-verified: init.sh exit 0, 11 tests passed. Overall metrics unchanged
+  (MAPE 9.65% vs 19.28% baseline). King ACF lag_1 0.9791, lag_12 0.7026.
