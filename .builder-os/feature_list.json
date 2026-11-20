@@ -1,0 +1,64 @@
+{
+  "features": [
+    {
+      "evidence": [
+        "pytest tests/test_model.py: 3 passed in 5.93s",
+        "King county holdout evaluation: model_mape=4.10%, model_rmse=6119.09 vs baseline_mape=12.01%, baseline_rmse=16979.06"
+      ],
+      "id": "F1",
+      "status": "passing",
+      "title": "Forecasting core: lag/rolling/calendar features, GradientBoostingRegressor, seasonal-naive baseline, holdout MAPE/RMSE",
+      "verification": [
+        "pytest tests/test_model.py passes",
+        "model MAPE computed on last-12-month holdout from real data"
+      ]
+    },
+    {
+      "evidence": [
+        "pytest tests/test_data.py: 4 passed in 4.78s",
+        "39 zones loaded with 4602 total monthly observations (>4000 rows)",
+        "Verified monthly sorted DatetimeIndex without gaps",
+        "Train/test chronological split leakage guard verified: train max date < test min date"
+      ],
+      "id": "F2",
+      "status": "passing",
+      "title": "Data pipeline: load vendored WA EV population CSV, clean to monthly series per zone, chronological split with leakage guard",
+      "verification": [
+        "pytest tests/test_data.py passes",
+        "series index is monthly and sorted; train max date < test min date"
+      ]
+    },
+    {
+      "evidence": [
+        "pytest tests/test_stationarity.py: 2 passed in 5.23s",
+        "ADF test executed on King County (statistic=-2.4414, p_value=0.1304, stationary=False)",
+        "ADF test correctly identified stationary synthetic Gaussian white noise (stationary=True, p_value<0.05)"
+      ],
+      "id": "F3",
+      "status": "passing",
+      "title": "Stationarity analysis: ADF test per zone recorded into metrics",
+      "verification": [
+        "pytest tests/test_stationarity.py passes",
+        "metrics.json contains adf entries with statistic and p_value"
+      ]
+    },
+    {
+      "evidence": [
+        "python -m gridcast run exits 0",
+        "outputs/metrics.json created with 39 zones evaluated, overall model_mape=9.65%, model_rmse=468.65, baseline_mape=19.28%, baseline_rmse=1039.83",
+        "outputs/forecast.csv created with 30 rows covering 6-month recursive forecasts for top 5 zones",
+        "README numbers strictly match outputs/metrics.json"
+      ],
+      "id": "F4",
+      "status": "passing",
+      "title": "CLI run + outputs + README with measured results",
+      "verification": [
+        "python -m gridcast run exits 0",
+        "outputs/metrics.json and outputs/forecast.csv exist",
+        "README numbers match metrics.json"
+      ]
+    }
+  ],
+  "project": "gridcast-ev-forecast",
+  "single_active_feature": true
+}
